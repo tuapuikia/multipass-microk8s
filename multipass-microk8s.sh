@@ -2,7 +2,7 @@
 
 # Configure your settings
 # Name for the cluster/configuration files
-NAME=""
+NAME=$1
 # Ubuntu image to use (xenial/bionic)
 IMAGE="bionic"
 # How many machines to create
@@ -57,6 +57,19 @@ for i in $(eval echo "{1..$SERVER_COUNT_MACHINE}"); do
     fi
 done
 
+# Enable CNI
+echo "Enable CNI cilium"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
+
+# Enable DNS
+echo "Enable DNS service"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable dns"
+
+# Enable Storage class
+echo "Enable storage class"
+sleep 30
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable storage"
+
 # Copy kubeconfig from instance
 $MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.config > /tmp/kubeconfig.yaml && sudo chmod 655 /tmp/kubeconfig.yaml"
 $MULTIPASSCMD copy-files microk8s-server-$NAME-$i:/tmp/kubeconfig.yaml $NAME-kubeconfig.yaml
@@ -67,15 +80,4 @@ echo "$MULTIPASSCMD exec microk8s-server-$NAME-$i -- /snap/bin/microk8s.kubectl 
 echo "Or use kubectl directly"
 echo "kubectl --kubeconfig ${NAME}-kubeconfig.yaml get nodes"
 
-# Enable DNS
-echo "Enable DNS service"
-$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable dns"
 
-# Enable CNI
-echo "Enable CNI cilium"
-$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
-
-# Enable Storage class
-echo "Enable storage class"
-sleep 30
-$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable storage"
