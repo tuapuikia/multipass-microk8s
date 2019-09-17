@@ -57,3 +57,17 @@ for i in $(eval echo "{1..$SERVER_COUNT_MACHINE}"); do
     fi
 done
 
+# Copy kubeconfig from instance
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.config > /tmp/kubeconfig.yaml && sudo chmod 655 /tmp/kubeconfig.yaml"
+$MULTIPASSCMD copy-files microk8s-server-$NAME-$i:/tmp/kubeconfig.yaml $NAME-kubeconfig.yaml
+echo "microk8s setup finished"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- /snap/bin/microk8s.kubectl get nodes
+echo "You can now use the following command to connect to your cluster"
+echo "$MULTIPASSCMD exec microk8s-server-$NAME-$i -- /snap/bin/microk8s.kubectl get nodes"
+echo "Or use kubectl directly"
+echo "kubectl --kubeconfig ${NAME}-kubeconfig.yaml get nodes"
+
+# Enable Storage class
+echo "Enable storage class"
+sleep 30
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable storage"
