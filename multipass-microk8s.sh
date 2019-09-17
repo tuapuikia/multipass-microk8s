@@ -67,6 +67,14 @@ echo "$MULTIPASSCMD exec microk8s-server-$NAME-$i -- /snap/bin/microk8s.kubectl 
 echo "Or use kubectl directly"
 echo "kubectl --kubeconfig ${NAME}-kubeconfig.yaml get nodes"
 
+# Enable DNS
+echo "Enable DNS service"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable dns"
+
+# Enable CNI
+echo "Enable CNI cilium"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
+
 # Enable Storage class
 echo "Enable storage class"
 sleep 30
