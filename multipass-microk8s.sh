@@ -57,9 +57,15 @@ for i in $(eval echo "{1..$SERVER_COUNT_MACHINE}"); do
     fi
 done
 
+# Enable RBAC
+echo "Enable RBAC"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable rbac"
+sleep 30
+
 # Enable CNI
-echo "Enable CNI cilium"
-$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
+#echo "Enable CNI cilium"
+#$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
+#sleep 30
 
 # Enable DNS
 echo "Enable DNS service"
