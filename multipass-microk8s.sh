@@ -42,7 +42,7 @@ read -r -d '' SERVER_CLOUDINIT_TEMPLATE << EOM
 #cloud-config
 
 runcmd:
- - '\sudo snap install --classic microk8s && sudo snap alias microk8s.kubectl kubectl'
+ - '\sudo snap install --classic microk8s && sudo snap alias microk8s.kubectl kubectl && sudo usermod -a -G microk8s ubuntu'
 EOM
 
 echo "$SERVER_CLOUDINIT_TEMPLATE" > "${NAME}-cloud-init.yaml"
