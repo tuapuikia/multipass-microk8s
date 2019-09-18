@@ -62,14 +62,17 @@ echo "Enable RBAC"
 $MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable rbac"
 sleep 30
 
-# Enable CNI
-#echo "Enable CNI cilium"
-#$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
-#sleep 30
-
 # Enable DNS
 echo "Enable DNS service"
 $MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable dns"
+sleep 30
+
+# Enable CNI
+echo "Enable CNI cilium"
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/microk8s.enable cilium"
+sleep 30
+$MULTIPASSCMD exec microk8s-server-$NAME-$i -- bash -c "/snap/bin/kubectl -n kube-system delete pod -l k8s-app=kube-dns"
+
 
 # Enable Storage class
 echo "Enable storage class"
